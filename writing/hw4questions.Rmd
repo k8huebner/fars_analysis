@@ -1,0 +1,14 @@
+---
+title: "hw4questions"
+author: "Kate Huebner"
+date: "10/20/2017"
+output: word_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+##Question 1
+
+
