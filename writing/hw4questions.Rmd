@@ -1,5 +1,5 @@
 ---
-title: "hw4questions"
+title: "Homework 4 Questions"
 author: "Kate Huebner"
 date: "10/20/2017"
 output: word_document
@@ -11,9 +11,10 @@ knitr::opts_chunk$set(echo = TRUE, message = FALSE,
 ```
 To access the documentation for the FARS dataset, go to this [link](https://crashstats.nhtsa.dot.gov/Api/Public/ViewPublication/812447)
 To access the Li and Brown paper, go to this [link](http://aje.oxfordjournals.org/content/early/2014/01/27/aje.kwt327.full.pdf+html)
+
 #Question 1
 ##In the in-course exercises, we have been analyzing data with accident as the observation unit. This study uses a different observation unit. What is the unit of observation in the Brady and Li study? When you download the FARS data for a year, you get a zipped folder with several different datasets. Which of the FARS datasets provides information at this observation level (and so will be the one you want to use for this analysis)?
-There are two levels of observation in this dataset (person and person-drug combination), which results in lots of repeated information. Their objective was to evaluate the time trends in alcohol and nonalcohol drugs detected in drivers who died within 1 hour of a motor vehicle crash in 6 states in the United States that routinely test such drivers for drugs. Thus, the 'person_year data file' is used for thisanalysis.
+ Their study objective was to evaluate the time trends in alcohol and nonalcohol drugs detected in drivers who died within 1 hour of a motor vehicle crash in 6 states in the United States that routinely test such drivers for drugs, therefore the unit of observation is the person. Thus, the 'person_year data file' is used for this analysis.
 
 #Question 2 
 ##This study only analyzes a subset of the available FARS data. Enumerate all of the constraints that are used by the study to create the subset of data they use in their study (e.g., years, states, person type, injury type). Go through the FARS documentation and provide the variable names for the variables you will use to create filter statements in R to limit the data to this subset. Provide the values that you will want to keep from each variable.
@@ -35,9 +36,12 @@ The variables used in the analysis include st_case, veh_no, per_no, state, per_t
 #Question 3 
 ##The study gives results stratified by age category, year, year category (e.g., 1999–2002), alcohol level, non-alcohol drug category, and sex. For each of these stratifications, give the variable name for the FARS variable you could use to make the split (i.e., the column name you would use in a group_by statement to create summaries within each category or the column name you would mutate to generate a categorical variable). Describe how each of these variables are coded in the data. Are there any values for missing data that you’ll need to mutate to NA values in R? Are there any cases where coding has changed over the study period?
 
-*the age variable will be broken up into 4 stratifications and renamed age_cat. This variable is coded numerically, where 0 is < 1 year, 1-120 is the age in years, 998 is unreported, and 999 is unknown. Since missing values are coded as 998 and 999, they wil need to be saved as NA in the code. 
+*Age: The age variable will be broken up into 4 stratifications and renamed age_cat by which we can group by. This variable is originally coded numerically, where 0 is < 1 year, 1-120 is the age in years, 998 is unreported, and 999 is unknown. Since missing values are coded as 998 and 999, they wil need to be mutated as NA in the code. 
 
-*the year
+*Year: Year is stored in each separate dataframe, as this is how it is parsed out. Therefore, the dataframe year will need tob e turned into a year column within the dataset based on the file name with which to group by. 
 
-*#A: Breaking down the alc_res variable, where if alc_res was >94 then NA is returned, if it was less than 94 its output is the absolute vale of alcohol content. This values is then divided by 10. A new alcohol column is formed with logical class of TRUE or FALSE. Then the alc_res column is then removed.
-  #B: Alc_res > 94 is coded as NA because it represented unknown results, no test given, or a different test was performed, They divided by 10 to signify the blood alcohol content. Overall, this is to change this variable into a meaningful, integer value instead of code. 
+*Alcohol Level: The alc_res variable will need to be coded such that Alc_res > 94 is converted to NA because it represented unknown results, no test given, or a different test was performed. In 2010 and later the value of 95 was added to code an unreported test result. The remaining integer values can be divided by 10 to signify the blood alcohol content. To turn this into a categorical variable, this continuous variable would need to be converted into bins before grouping by it. 
+
+*Non Alcohol Drug Category: Drug_res was coded in either results 1, 2 or 3 columns as 100-295 (narcotic), 300-395 (depressant), 400-495 (stimulant), etc. Unknown drug categories, if they were just tested, or untested drug categories can be filtered out because that is not of interest to the analysis. Because there are potentially multiple columns if multiple drug tests were positive, this will have to be gathered into 1 to make it tidy. we will have to create a new drug_type column that contains the name of the drug type and a neighbor column that says true or false
+
+*Sex: Sex was coded as 1 (male), 2 (female) and and 9 (unknown). Therefore, 9 values will need to be coded as NA, and then the category sex can be grouped by once it is turned into a factor. 

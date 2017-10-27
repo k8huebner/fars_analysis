@@ -61,7 +61,7 @@ purrr::map(1999:2010, fars_dbf_to_csv)
 ```{r echo = TRUE}
 clean_yearly_person_file <- function(year) {
   # 1. Read data in.
-  #A: Reading in the CSV file as a dataframe, renaming it to "df"" 
+  #A: Reading in the CSV file as a dataframe, renaming it to "df"" one year at a time
   #B: To load the data in so that it is worked on in future steps
 person_file <- paste0(raw_data_path, "/person_", year, ".csv") 
 df <- readr::read_csv(person_file)
@@ -151,7 +151,7 @@ include.lowest = TRUE, right = FALSE)) %>%
 dplyr::select(-age)
 
   # 14. Gather all the columns with different drug listings (i.e., `drugres1`, `drugres2`, `drugres3`). Convert from the numeric code listings to drug categories.
-  #A: Gather is used to create a new column called drug_number (which will contain values 1,2 or 3) and the corresponding values (codes) will go into a column called drug_type_raw. Mutate is then used to create third column called drug)type where the character name for the corresponding code is entered into the column. Drug type is then turned into a factor. Select is used to eliminate drug type raw and drug number because they are no longer needed. 
+  #A: Gather is used to create a new column called drug_number (which will contain values 1,2 or 3) and the corresponding values (codes) will go into a column called drug_type_raw. Mutate is then used to create a third column called drug_type where the character name for the corresponding code is entered into the column. Drug type is then turned into a factor. Select is used to eliminate drug type raw and drug number because they are no longer needed. 
   #B: Creating a tidy dataset (called gathered_df) by putting the meaningful observations into columns instead of variable names, thereby switching from a wide to a long format. Drug type was renamed as a factor indicating a meaningful value instead of coded. 
 gathered_df <- df %>%
 tidyr::gather(drug_number, drug_type_raw, contains("drugres")) %>% 
@@ -180,7 +180,7 @@ filter(!is.na(drug_type)) %>% # Filtering out missing values for drug type.
   summarize(has_drug = TRUE) %>% #generating a new column in the grouped data called has_drug. Everything will be filled with to TRUE. 
   ungroup() %>% #ugrouping the drug type groups
 mutate(row_num = 1:n()) %>% #making a new column called row_num that is 1:the total count. This step is needed for spread. 
-spread(drug_type, has_drug, fill = FALSE) %>% #Changing from long to wide format by drug type, so that each drug type is a new column (ie. narcotic). If there is nothing in that column it won't repeat or continue to fill if it isempty
+spread(drug_type, has_drug, fill = FALSE) %>% #Changing from long to wide format by drug type, so that each drug type is a new column (ie. narcotic). If there is nothing in that column it won't repeat or continue to fill if it is empty
   select(-row_num) #removing the row number column
 # 17. Join this back into the full dataset. (Write a sentence or two for each 
 # step in this pipe chain.)
@@ -189,7 +189,7 @@ dplyr::select(-contains("drugres")) %>%  #removing the category drug res because
   dplyr::full_join(non_missing_drugs, by = "unique_id") %>% #Full join by unique id requires both unique ids to be present in both dataframes in order to join, and all of the values from both
   dplyr::select(-None) %>% #removing the column none
 tidyr::gather(drug_type, positive_for_drug, Alcohol, Cannabinoid,
-Depressant, Narcotic, Other, Stimulant) %>% #gathering to change once again from wide to long format (from columns to rows)
+Depressant, Narcotic, Other, Stimulant) %>% #gathering to change once again from wide to long format (from columns to rows) and including alcohol. The new column will be called Drug_type, and positive for drug will include wether or not they were positive or not for a drug. 
   dplyr::mutate(drug_type = factor(drug_type)) %>% #Turning drug type into a factor
 unique() #Extracting unique elements to remove duplicate ids 
 return(df) #A return statement determines the value the function returns

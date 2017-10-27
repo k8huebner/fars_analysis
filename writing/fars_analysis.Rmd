@@ -1,0 +1,41 @@
+---
+
+title: "fars_analysis"
+author: "Kate Huebner"
+date: "10/27/2017"
+output: word_document
+---
+
+```{r global_Options, echo=TRUE}
+knitr::opts_chunk$set(echo = TRUE, message = FALSE,
+                      warning = FALSE, error = FALSE)
+```
+
+```{r}
+library(dplyr) 
+library(tidyr) 
+library(ggplot2)
+```
+
+```{r}
+load("../data/clean_fars.RData") 
+#source("../R/fars_functions.R")
+dim(clean_fars)
+length(unique(clean_fars$unique_id))
+summary(clean_fars)
+
+```
+
+```{r}
+clean_fars %>%
+mutate(year_cat = cut(year, breaks = c(1999, 2002, 2006, 2010),
+labels = c("1999-2002", "2003-2006", "2007-2010"),
+include.lowest = TRUE, right = TRUE)) %>% filter(!is.na(sex)) %>%
+group_by(drug_type, sex, year_cat) %>% summarize(n_non_missing = sum(!is.na(positive_for_drug)),
+positive_test = sum(positive_for_drug, na.rm = TRUE),
+perc_positive = round(100 * positive_test / n_non_missing, 1)) %>% select(drug_type, sex, year_cat, perc_positive) %>%
+unite(sex_year_cat, sex, year_cat) %>%
+spread(sex_year_cat, perc_positive) %>%
+knitr::kable(col.names = c("Drug type", "F 1999-2002", "F 2003-2006", "F 2007-2010", "M 1999-2002", "M 2003-2006",
+                             "M 2007-2010"))
+```
