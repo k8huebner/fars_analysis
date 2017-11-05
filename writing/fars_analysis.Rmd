@@ -39,8 +39,16 @@ spread(sex_year_cat, perc_positive) %>%
 knitr::kable(col.names = c("Drug type", "F 1999-2002", "F 2003-2006", "F 2007-2010", "M 1999-2002", "M 2003-2006",
                              "M 2007-2010"))
 ```
-#Colleen added a chunk to test github and stuff 
 ```{r}
+#Figure 1
+
+```
+
+
+
+```{r}
+#Generating a table with percentages and 95% CIs by drug type for the years 1999 and 2010 using the perc_cis function
+
 
 ```
 
