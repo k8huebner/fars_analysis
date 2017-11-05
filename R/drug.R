@@ -33,7 +33,7 @@ else drug == c("Alcohol, Cannabinoid", "Depressant", "Narcotic", "Other", "Stimu
                  "Narcotic", "Other", "Stimulant"){
     
   }
-  
+   
 }
 
 
