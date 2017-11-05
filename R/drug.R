@@ -28,7 +28,15 @@ else drug == c("Alcohol, Cannabinoid", "Depressant", "Narcotic", "Other", "Stimu
 
 
 <- function(drug, df){
-  if(df$drug == "Nonalcohol") {}
+  if(drug == "Nonalcohol") {
+    
+    nonalcohol <- df %>% 
+      mutate(alchyesno = drug_type != "Alcohol") %>% 
+      filter(alchyesno == "TRUE") %>% 
+      select("unique_id", "sex", "year", "agecat", "positive_for_drug") %>% 
+      mutate(drug_type = "Nonalcohol")
+    
+  }
   if(df$drug %in% c("Alcohol, Cannabinoid", "Depressant", 
                  "Narcotic", "Other", "Stimulant"){
     
@@ -37,11 +45,7 @@ else drug == c("Alcohol, Cannabinoid", "Depressant", "Narcotic", "Other", "Stimu
 }
 
 
-test <- clean_fars %>% 
-  mutate(alchyesno = drug_type != "Alcohol") %>% 
-  filter(alchyesno == "TRUE") %>% 
-  select("unique_id", "sex", "year", "agecat", "positive_for_drug") %>% 
-  mutate(drug_type = "Nonalcohol")
+
   
 
 summary(test)
