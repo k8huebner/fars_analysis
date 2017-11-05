@@ -1,0 +1,372 @@
+---
+output:
+  pdf_document: default
+  html_document: default
+  word_document: default
+---
+STAA552 Homework #2: Due Friday, November 3
+========================================================
+#### Name: Maggie Weinroth
+
+*********************************************************************************
+
+0. Read Sections 2.2, 2.3.1, 2.3.2, and 3.1 of Agresti.  
+
+1. The following data are from the office of the attorney general for the state of Missouri.  These 2016 data detail traffic stops, subsequent searches of stopped drivers, and arrests of stopped and searched drivers,  by characteristics of driver (non-Hispanic white, non-Hispanic black, Hispanic, etc.)  Also included are `Pop` values of the number of Missouri residents of driving age.  Details are available at 
+<http://ago.mo.gov/home/vehicle-stops-report/2016-executive-summary>
+```{r}
+Race <-c("Total", "White", "Black", "Hispanic", "Asian", "AmIndian", "Other")
+Pop <- c(4730501, 3914998, 515828, 139109, 80677,	19168, 60721)
+Stops <- c(1555468, 1212726, 279657, 34472, 14395, 1800, 12418)
+Searches <- c(95944, 67546, 24533, 2924, 375, 105, 461)
+Arrests <- c(72390, 50730, 18443, 2455, 286, 78, 398)
+d <- data.frame(Race, Pop, Stops, Searches, Arrests)
+```
+
+  a). Let $Y$ denote search (yes, no) and let $X$ denote race of driver, restricting attention to only non-Hispanic whites (`White`), non-Hispanic blacks (`Black`), and Hispanics (`Hispanic`) who were stopped.  Report the sample/empirical (i) joint distribution of $X$ and $Y$, (ii) conditional distribution of $Y$ given $X$, and (iii) conditional distribution of $X$ given $Y$.  (iv) What is the empirical probability that a stopped driver is searched, given that s/he is Hispanic?  (v) What is the empirical probability that a stopped driver is Hispanic, given that s/he is not searched?
+  
+*********************************************************************************
+
+**Answer:**
+
+```{r}
+library(dplyr)
+library(knitr)
+d <- d %>% 
+  select("Race", "Stops", "Searches") %>% 
+  filter(Race %in% c("White", "Black", "Hispanic")) %>% 
+  mutate("Stop_no_search" = Stops - Searches) %>% 
+  select("Race", "Searches", "Stop_no_search")
+d %>% 
+  kable()
+```
+
+(i) Empirical joint distribution of $X$ and $Y$: 
+```{r}
+total <- (sum(d$Searches) + sum(d$Stop_no_search))
+ProbYesSearch <- d$Searches/total
+ProbYesSearch
+ProbNoSearch <- d$Stop_no_search/total
+ProbNoSearch
+Race <- c("white", "black", "hispanic")
+data.frame(Race, ProbNoSearch, ProbYesSearch) %>% 
+  kable(digits = 3)
+```
+
+
+(ii) Empirical conditional distribution of $Y$ given $X$: 
+
+
+```{r}
+Whitetotal <- sum(d[1,2:3])
+Blacktotal <- sum(d[2,2:3])
+Hispanictotal <- sum(d[3,2:3])
+
+Whiteyesno <- (d[1,2:3])/Whitetotal
+blackyesno <- (d[2,2:3])/Blacktotal
+hispainicyesno <- (d[3,2:3])/Hispanictotal
+
+Whiteyesno
+blackyesno
+hispainicyesno
+```
+(iii) Empirical conditional distribution of $X$ given $Y$: 
+
+```{r}
+CProbYesSearch <- d$Searches/(sum(d$Searches))
+CProbYesSearch
+CProbNoSearch <- d$Stop_no_search/(sum(d$Stop_no_search))
+CProbNoSearch
+Race <- c("white", "black", "hispanic")
+data.frame(Race, CProbNoSearch, CProbYesSearch) %>% 
+  kable(digits = 3)
+```
+
+
+(iv) Empirical probability that a stopped driver is searched, given that s/he is Hispanic:
+
+```{r}
+Searched_His <- d[3,2]/sum(d[3,2:3])
+Searched_His 
+
+```
+
+
+(v) Empirical probability that a stopped driver is Hispanic, given that s/he is not searched:
+
+```{r}
+His_notsreached <- d[3,3]/sum(d[,3])
+His_notsreached
+
+```
+
+
+*********************************************************************************
+    
+  b). Estimate the odds ratio between race (white, black) and search (yes, no), among all drivers who were stopped.  Interpret your estimated odds ratio.
+  
+*********************************************************************************
+
+**Answer:** 
+
+```{r}
+d
+odds1 <- (d[1,2]*d[2,3])/(d[1,3]*d[2,2])
+odds1
+			
+```
+
+The odds ratio is below one, (0.61) this result means that race and search are independent (the closer to zero this number is indicates this). This means you can not gain information on if someone will be searched based on their race. 
+
+*********************************************************************************
+
+  c). Estimate the odds ratio between race (white, black) and arrest (yes, no), among all drivers who were stopped.  Interpret your estimated odds ratio.
+
+*********************************************************************************
+
+**Answer:** 
+```{r}
+Race <-c("White", "Black")
+Stops <- c(1212726, 279657)
+Arrests <- c(50730, 18443)
+d2 <- data.frame(Race, Stops, Arrests) 
+d2 %>% 
+  mutate("Not_Arrests" = Stops - Arrests) %>% 
+  select("Race", "Arrests", "Not_Arrests")
+odds2 <- (50730*261214)/(18443*1161996)
+odds2
+
+
+```
+
+The odds ratio is close to zero and below one. This means race is independant of arrests, so one race is not more likely to get arrested than the other race. 
+
+*********************************************************************************
+
+
+2. The following is an abbreviated description of a real study (Roth *et al.* 2001.  *Injury* 32(7):551--554.): 
+*In a retrospective review, 79 patients with penetrating injuries and age $\ge 55$ were blindly matched for Injury Severity Score (ISS) and Abbreviated Injury Scores (AIS) with 79 penetrating trauma patients aged 15--35 years, who were admitted to the hospital over the same 4 year period (June 1994--June 1998). Mortality rates were compared between the two groups.  In the older group, 18 did not survive, and in the younger group, 14 did not survive.*
+
+    a). Use this description to estimate the relative risk of an older patient dying of penetrating trauma versus a younger patient dying of penetrating trauma, and obtain the corresponding asymptotic $95\%$ confidence interval. Is there evidence that mortality risk differs for young and old victims of penetrating trauma?  (Work with log relative risk and then exponentiate the point estimate and confidence interval to return to the original scale.)  Do not use any non-trivial functions in `R` for this problem. 
+
+*********************************************************************************
+
+**Answer:** 
+
+```{r}
+#Assignment
+rho_hat1 <- 14/79
+rho_hat2 <- 18/79
+
+rho_hat1/rho_hat2 ##RR
+
+lower <- (log(rho_hat1)-log(rho_hat2))-1.96*sqrt(
+  (1-rho_hat1)/(rho_hat1*79)+(1-rho_hat2)/(rho_hat2*79))
+upper <- (log(rho_hat1)-log(rho_hat2))+1.96*sqrt(
+  (1-rho_hat1)/(rho_hat1*79)+(1-rho_hat2)/(rho_hat2*79))
+
+CI <- c(exp(lower), exp(upper))
+CI
+
+```
+
+The 95% CI includes a 1 in the RR, meaning there is not evidence mortality risk differs from yougn and old victims of penetrating trama. 
+
+*********************************************************************************
+
+
+
+  b). Describe in this setting how you would conduct a case-control study over the same period, starting with the $18+14=32$ deaths as cases and finding two controls for each case, with controls matched on ISS and AIS. Include in your description the estimation of the relevant parameter and the corresponding test of the relevant hypothesis of interest.
+  
+*********************************************************************************
+
+**Answer:** 
+
+For a case control study in the same period, I would match each of the deaths to two controls using ISS, AIS, and other characierisitics. I would *not* match for age (x) because that is what I am interested in. A table with fixed and random parameters is illistrated below:
+
+```{r}
+Age <-c("Young", "Old", "Total")
+case <- c(14, 18, 32)
+control <- c("n12", "n22", "n+2")
+total <- c(32, 64, 96)
+d3 <- data.frame(Age, case, control, total) 
+d3 %>%   
+kable()
+```
+
+In this case, I would control on y (column sums) each column has a mutinomial (special case binomial) distribution `(n+j, P[x = i, y = j])`. These distributions are not indep. due to matching cases. 
+
+I would use an odds ratio because RR does not make since based on the fixed columns so you can not esitmate `rho1 - rho2`. I would test independance with a Person's test to see if there is dependance between death attributed to this disease and age, I would have to estimate two parameters. The Ho would be that there was no difference between young and old. 
+
+*********************************************************************************
+
+3. **Obesity and heart disease:** The relationship between obesity and
+cardiovascular disease (CVD) is complicated. Some opponents to the theory that there
+is a causal link between the two cite the societal stress of being obese
+as a confounding factor that actually drives CVD. A six-year
+prospective study (D.E. Crews. Cardiovascular mortality in American Samoa. *Human Biology*, 1988) examined this idea, using data from
+America Samoa, where obesity is both common and socially desirable. The results were as follows: 
+```{r}
+samoa <- matrix(c(16, 2045, 7, 1044), nrow = 2, byrow = TRUE)
+colnames(samoa) <- c("CVD Death", "Other")
+rownames(samoa) <- c("Obese", "Not Obese")
+samoa
+```
+
+*Compute the following without using any nontrivial packages in `R`.*
+
+  a). Estimate the difference of proportions between the conditional
+probability of an obese Samoan dying of CVD and the conditional
+probability of a non-obese Samoan dying of CVD, and obtain the
+corresponding asymptotic 95% confidence interval. Is there evidence that obesity affects risk of CVD death in this population? Comment on
+whether you think the difference of proportions is the right comparison tool in this situation.
+
+*********************************************************************************
+
+**Answer:** 
+```{r}
+rho1 <- 16/2061
+rho2 <- 7/1051
+
+rho1-rho2 #diff in proportions 
+#CI
+lower <- ((rho1) - (rho2)) - 1.96 * sqrt(
+  (rho1*(1 - rho1) / 2061)) + (rho2 * (1-rho2) / (7+1044))
+upper <- ((rho1) - (rho2)) + 1.96 * sqrt(
+  (rho1 * (1 - rho1) / 2061)) + (rho2 * (1-rho2) / (7+1044))
+CI <- c((lower), (upper))
+CI
+```
+
+This difference in proportion crosses over zero, so we do not reject the `Ho: rho1 = rho2`, therefore there is not a differnece in death attributed to obesity.   
+
+
+*********************************************************************************
+
+  b). Find the relative risk and associated asymptotic 95\% confidence
+interval.  Is there evidence that obesity affects risk of CVD death in this population?
+
+*********************************************************************************
+
+**Answer:** 
+```{r}
+
+rho1 <- 16/2061
+rho2 <- 7/1051
+
+rho1/rho2 ##RR
+
+#CI
+lower <- (log(rho1) - log(rho2)) - 1.96 * sqrt(
+  (1 - rho1) / (rho1 * 2061) + (1 - rho2) / (rho2 * 1051))
+upper <- (log(rho1) - log(rho2)) + 1.96 * sqrt(
+  (1 - rho1) / (rho1 * 2061) + (1 - rho2) / (rho2 * 1051))
+
+CI <- c(exp(lower), exp(upper))
+
+CI
+```
+
+In the CI, the RR crosses 1, so fail to reject the Ho of no difference, there not an effect of obesity. 
+
+*********************************************************************************
+
+
+
+  c). Find the odds ratio and associated asymptotic 95\% confidence
+interval. Is there evidence that obesity affects risk of CVD death in this population?
+
+*********************************************************************************
+
+**Answer:** 
+
+```{r}
+samoa
+
+OR <- (16*1044)/(2045*7)
+OR
+
+#CI
+SE <- (((1/16) + (1/2045) + (1/7) + (1/1044))^(1/2))
+
+lower <- log(OR) - 1.96*SE*(log(OR))
+upper <- log(OR) + 1.96*SE*(log(OR))
+
+CI <- c(exp(lower), exp(upper))
+CI
+```
+
+In the CI, the OR does not cross 1, so there is a small ro moderate effect of obesity. 
+
+*********************************************************************************
+
+
+  d). Comment on the relationship between your answers in (b) and
+(c). Using the definition of relative risk RR and odds-ratio $\theta$,
+show why they exhibit this relationship. 
+
+*********************************************************************************
+
+**Answer:** 
+
+The OR and RR both fail to reject the Ho of no differenes between groups, meaning there is a difference. The RR = `1.165` while the OR = `1.166` they are so similair because the OR and RR are related: 
+
+OR = RR((1 - pi2 / 1 - pi1))
+
+Because the P[$pi$i] was close to zero for both groups, we see siliarity of the outcome. Because of this, the OR can provide a rough estimate of RR (though not directly) in designs like case control. 
+
+
+*********************************************************************************
+
+
+  e). Re-do the above analysis using the `epi.2by2` function in the `epiR` package in `R`. Clearly describe where to obtain the difference of proportions and confidence interval, relative risk and confidence interval, and odds ratio and confidence interval from the `epi.2by2` output.  
+
+*********************************************************************************
+
+**Answer:** 
+
+```{r}
+library(epiR)
+
+epi.2by2(samoa)
+
+
+```
+
+In the above output the row *Attrib risk* is thedifference of proportions and confidence interval, *Inc risk ratio* is relative risk and confidence interval, and *Odds ratio* is the odds ratio and confidence interval.
+
+*********************************************************************************
+
+
+4.  Complete exercise 3.7 of Agresti.
+
+*********************************************************************************
+
+**Answer:** 
+
+
+```{r}
+Kobe <- matrix(c(152,37, 33, 8), nrow = 2, byrow = TRUE)
+colnames(Kobe) <- c("2nd_shot_yes", "2nd_shot_no")
+rownames(Kobe) <- c("1st_shot_yes", "1st_shot_no")
+Kobe
+
+rho1 <- 152/189
+rho2 <- 33/41
+
+rho1 / rho2 #RR
+
+#CI
+lower <- (log(rho1) - log(rho2)) - 1.96 * sqrt(
+  (1 - rho1) / (rho1 * 189) + (1 - rho2) / (rho2 * 41))
+upper <- (log(rho1) - log(rho2)) + 1.96 * sqrt(
+  (1 - rho1) / (rho1 * 189) + (1 - rho2) / (rho2 *41))
+
+CI <- c(exp(lower), exp(upper))
+
+CI
+
+```
+
+The RR passes over 1, therefore the first and second free throw are independent. 
+
