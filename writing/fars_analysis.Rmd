@@ -42,6 +42,9 @@ knitr::kable(col.names = c("Drug type", "F 1999-2002", "F 2003-2006", "F 2007-20
 ```
 
 ```{r}
+<<<<<<< HEAD
+2+2
+=======
 perc_cis <- function(x, n) {
   
   prob <- (x / n)
@@ -57,5 +60,6 @@ CI
 
 ```{r}
 perc_cis(x = 9000, n = 23000)
+>>>>>>> 42f25b0ffcf13b8e628e83d316c0fdbf0163b3d2
 ```
 
