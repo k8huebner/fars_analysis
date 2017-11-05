@@ -39,4 +39,9 @@ else drug == c("Alcohol, Cannabinoid", "Depressant", "Narcotic", "Other", "Stimu
 
 test <- clean_fars %>% 
   mutate(alchyesno = drug_type != "Alcohol") %>% 
-  filter(alchyesno == "TRUE")
+  filter(alchyesno == "TRUE") %>% 
+  select("unique_id", "sex", "year", "agecat", "positive_for_drug") %>% 
+  mutate(drug_type = "Nonalcohol")
+  
+
+summary(test)
