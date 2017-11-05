@@ -1,10 +1,9 @@
 ---
+
 title: "fars_analysis"
 author: "Kate Huebner"
 date: "10/27/2017"
-output:
-  word_document: default
-  html_document: default
+output: word_document
 ---
 
 ```{r global_Options, echo=TRUE}
@@ -40,22 +39,8 @@ spread(sex_year_cat, perc_positive) %>%
 knitr::kable(col.names = c("Drug type", "F 1999-2002", "F 2003-2006", "F 2007-2010", "M 1999-2002", "M 2003-2006",
                              "M 2007-2010"))
 ```
-
+#Colleen added a chunk to test github and stuff 
 ```{r}
-perc_cis <- function(x, n) {
-  
-  prob <- (x / n)
-  SE <- sqrt((prob*(1-prob)/n))
-  CI_lower <- prob + 1.96 * (SE*prob)
-  CI_upper <- prob - 1.96 * (SE*prob)
-  
-CI <- c(CI_lower, CI_upper)
-CI
-  
-}
-```
 
-```{r}
-perc_cis(x = 9000, n = 23000)
 ```
 
