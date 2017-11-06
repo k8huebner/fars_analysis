@@ -132,6 +132,11 @@ theme_few()
 plot_2
 ```
 
+```{r}
+#first function table
+
+```
+
 
 ```{r}
 #second function table
