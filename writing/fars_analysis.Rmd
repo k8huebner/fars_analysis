@@ -1,9 +1,10 @@
 ---
-
 title: "fars_analysis"
-author: "Kate Huebner"
+author: "Kate Huebner, Maggie Weinroth, Colleen Brent"
 date: "10/27/2017"
-output: word_document
+output:
+  word_document: default
+  html_document: default
 ---
 
 ```{r global_Options, echo=TRUE}
@@ -15,11 +16,12 @@ knitr::opts_chunk$set(echo = TRUE, message = FALSE,
 library(dplyr) 
 library(tidyr) 
 library(ggplot2)
+library(ggthemes)
 ```
 
 ```{r}
 load("../data/clean_fars.RData") 
-#source("../R/fars_functions.R")
+source("../R/fars_functions.R")
 dim(clean_fars)
 length(unique(clean_fars$unique_id))
 summary(clean_fars)
@@ -39,30 +41,43 @@ spread(sex_year_cat, perc_positive) %>%
 knitr::kable(col.names = c("Drug type", "F 1999-2002", "F 2003-2006", "F 2007-2010", "M 1999-2002", "M 2003-2006",
                              "M 2007-2010"))
 ```
-#Colleen added a chunk to test github and stuff 
+
 ```{r}
-<<<<<<< HEAD
-<<<<<<< HEAD
-2+2
-=======
-perc_cis <- function(x, n) {
-  
-  prob <- (x / n)
-  SE <- sqrt((prob*(1-prob)/n))
-  CI_lower <- prob + 1.96 * (SE*prob)
-  CI_upper <- prob - 1.96 * (SE*prob)
-  
-CI <- c(CI_lower, CI_upper)
-CI
-  
-}
+#Figure 1: Prevalence of nonalcohol drugs in fatally injured drivers by year and age group
+nonalcohol_data <- clean_fars %>%
+filter(!drug_type == "Alcohol") %>%
+select(unique_id, drug_type, year, agecat, positive_for_drug) %>%
+filter(!is.na(positive_for_drug)) %>%
+filter(!is.na(agecat)) %>%
+group_by(year, agecat, unique_id) %>% 
+summarize(positive_for_drug = any(positive_for_drug)) %>% 
+ungroup() %>% 
+group_by(year, agecat) %>%
+summarize(count = 100*(mean(positive_for_drug)))
+
+nonalcohol_data
+
+plot_1 <- nonalcohol_data %>%
+ggplot(aes(x = year, y = count, color = agecat)) +
+geom_line() +
+labs(x = "Year", y = "Positive for Nonalcohol Drugs, %)", color = "Age") +
+#scale_y_continuous(limits = c(0,40), breaks = 10, name = "") +
+theme_few()
+plot_1
+
+
 ```
 
-```{r}
-perc_cis(x = 9000, n = 23000)
->>>>>>> 42f25b0ffcf13b8e628e83d316c0fdbf0163b3d2
-=======
 
->>>>>>> 05c93635f15214e960b1db2b191b8c9b5d76c2a7
+```{r}
+#second function table
+drug_list <- c("Alcohol", "Nonalcohol", "Narcotic", "Depressant",
+               "Stimulant", "Cannabinoid", "Other")
+drug_trend_tests_ca <- lapply(drug_list, test_trend_ca)
+drug_trend_tests_ca <- dplyr::bind_rows(drug_trend_tests_ca) %>%
+  dplyr::mutate(drug = drug_list) %>%
+  dplyr::select(drug, "Z", "p.value")
+drug_trend_tests_ca %>%
+  knitr::kable(digits = 2)
 ```
 
