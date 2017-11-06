@@ -1,6 +1,6 @@
 #third function
 
-functionmaybe <- function(drug, df = clean_fars){
+test_trend_log_reg <- function(drug, df = clean_fars){
   if(drug == "Nonalcohol") {
     
     nonalcohol <- df %>% 
@@ -10,8 +10,11 @@ functionmaybe <- function(drug, df = clean_fars){
       mutate(drug_type = "Nonalcohol")
     log_reg <- glm(positive_for_drug ~ year, data = to_test,
                    family = binomial(link = "logit"))
-    summary(log_reg)$coefficients
-    
+   x <- summary(log_reg)$coefficients
+   x = as.data.frame(x)
+   x %>% 
+     slice(2) %>% 
+     select(3:4)    
     
   }
   else {
@@ -19,10 +22,23 @@ functionmaybe <- function(drug, df = clean_fars){
       filter(drug_type == drug)
     log_reg <- glm(positive_for_drug ~ year, data = to_test,
                    family = binomial(link = "logit"))
-    summary(log_reg)$coefficients
+    x <- summary(log_reg)$coefficients 
+    x = as.data.frame(x)
+    x %>% 
+      slice(2) %>% 
+      select(3:4)
   }
 }
-   
 
-functionmaybe(drug = "Other")
+#test_trend_log_reg(drug = "Stimulant")
+
+#fars analysis
+drug_list <- c("Alcohol", "Nonalcohol", "Narcotic", "Depressant",
+               "Stimulant", "Cannabinoid", "Other")
+drug_trend_tests_log_reg <- lapply(drug_list, test_trend_log_reg)
+drug_trend_tests_log_reg <- dplyr::bind_rows(drug_trend_tests_log_reg) %>%
+  dplyr::mutate(drug = drug_list) %>%
+  dplyr::select(drug, "z value", "Pr(>|z|)")
+drug_trend_tests_log_reg %>% 
+  knitr::kable(digits = 2)
 
