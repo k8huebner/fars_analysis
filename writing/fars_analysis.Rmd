@@ -44,23 +44,16 @@ knitr::kable(col.names = c("Drug type", "F 1999-2002", "F 2003-2006", "F 2007-20
 
 ```{r}
 #Figure 1: Prevalence of nonalcohol drugs in fatally injured drivers by year and age group
-# alcohol_data <- clean_fars %>%
-# select(unique_id, drug_type, year, agecat, positive_for_drug) %>%
-# filter(!is.na(positive_for_drug)) %>%
-# filter(!is.na(agecat)) %>%
-# group_by(agecat, year) %>%
-# summarize(total_count = n())
-# alcohol_data
-
-
 nonalcohol_data <- clean_fars %>%
 filter(!drug_type == "Alcohol") %>%
 select(unique_id, drug_type, year, agecat, positive_for_drug) %>%
 filter(!is.na(positive_for_drug)) %>%
-filter(positive_for_drug == TRUE) %>%
 filter(!is.na(agecat)) %>%
+group_by(year, agecat, unique_id) %>% 
+summarize(positive_for_drug = any(positive_for_drug)) %>% 
+ungroup() %>% 
 group_by(year, agecat) %>%
-summarize(count = n())
+summarize(count = mean(positive_for_drug))
 nonalcohol_data
 
 year_data <- clean_fars %>%
