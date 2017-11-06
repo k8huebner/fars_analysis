@@ -42,7 +42,7 @@ knitr::kable(col.names = c("Drug type", "F 1999-2002", "F 2003-2006", "F 2007-20
                              "M 2007-2010"))
 ```
 
-```{r}
+```{r} 
 clean_fars %>%
 mutate(year_cat = cut(year, breaks = c(1999, 2000, 2001, 2002, 2006, 2010),
 labels = c("1999", "2000", "2001", "2003-2006", "2007-2010"),
