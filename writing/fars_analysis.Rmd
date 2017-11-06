@@ -16,6 +16,7 @@ knitr::opts_chunk$set(echo = TRUE, message = FALSE,
 library(dplyr) 
 library(tidyr) 
 library(ggplot2)
+library(ggthemes)
 ```
 
 ```{r}
@@ -43,13 +44,13 @@ knitr::kable(col.names = c("Drug type", "F 1999-2002", "F 2003-2006", "F 2007-20
 
 ```{r}
 #Figure 1: Prevalence of nonalcohol drugs in fatally injured drivers by year and age group
-alcohol_data <- clean_fars %>%
-select(unique_id, drug_type, year, agecat, positive_for_drug) %>%
-filter(!is.na(positive_for_drug)) %>%
-filter(!is.na(agecat)) %>%
-group_by(agecat, year) %>%
-summarize(total_count = n())
-alcohol_data
+# alcohol_data <- clean_fars %>%
+# select(unique_id, drug_type, year, agecat, positive_for_drug) %>%
+# filter(!is.na(positive_for_drug)) %>%
+# filter(!is.na(agecat)) %>%
+# group_by(agecat, year) %>%
+# summarize(total_count = n())
+# alcohol_data
 
 
 nonalcohol_data <- clean_fars %>%
@@ -58,22 +59,29 @@ select(unique_id, drug_type, year, agecat, positive_for_drug) %>%
 filter(!is.na(positive_for_drug)) %>%
 filter(positive_for_drug == TRUE) %>%
 filter(!is.na(agecat)) %>%
-group_by(agecat, year) %>%
+group_by(year, agecat) %>%
 summarize(count = n())
 nonalcohol_data
 
-joined <- nonalcohol_data %>%
-left_join(alcohol_data)
-joined <- nonalcohol_data %>%
-left_join(alcohol_data) %>%
-mutate(proportion = (count / total_count)*100)
-joined
+year_data <- clean_fars %>%
+filter(!drug_type == "Alcohol") %>%
+select(unique_id, drug_type, year, agecat, positive_for_drug) %>%
+filter(!is.na(positive_for_drug)) %>%
+filter(positive_for_drug == TRUE) %>%
+filter(!is.na(agecat)) %>%
+group_by(year) %>%
+summarize(count = n())
 
-plot_1 <- joined %>%
+data_comb <- nonalcohol_data %>% 
+  left_join(year_data, by = "year") %>% 
+  mutate(proportion = 100*(count.x / count.y))
+
+
+plot_1 <- data_comb %>%
 ggplot(aes(x = year, y = proportion, color = agecat)) +
 geom_line() +
 labs(x = "Year", y = "Positive for Nonalcohol Drugs, %)", color = "Age") +
-scale_y_continuous(limits = c(0,30), breaks = 10, name = "") +
+#scale_y_continuous(limits = c(0,40), breaks = 10, name = "") +
 theme_few()
 plot_1
 
