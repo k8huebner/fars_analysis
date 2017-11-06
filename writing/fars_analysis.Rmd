@@ -42,7 +42,7 @@ knitr::kable(col.names = c("Drug type", "F 1999-2002", "F 2003-2006", "F 2007-20
                              "M 2007-2010"))
 ```
 
-```{r}
+```{r, fig.width = 7, fig.height = 4, fig.align ='center'}
 #Figure 1: Prevalence of nonalcohol drugs in fatally injured drivers by year and age group
 nonalcohol_data <- clean_fars %>%
 filter(!drug_type == "Alcohol") %>%
@@ -79,5 +79,18 @@ drug_trend_tests_ca <- dplyr::bind_rows(drug_trend_tests_ca) %>%
   dplyr::select(drug, "Z", "p.value")
 drug_trend_tests_ca %>%
   knitr::kable(digits = 2)
+```
+
+```{r}
+#Third function table
+drug_list <- c("Alcohol", "Nonalcohol", "Narcotic", "Depressant",
+               "Stimulant", "Cannabinoid", "Other")
+drug_trend_tests_ca <- lapply(drug_list, test_trend_log_reg)
+drug_trend_tests_ca <- dplyr::bind_rows(drug_trend_tests_ca) %>%
+  dplyr::mutate(drug = drug_list) %>%
+  dplyr::select(drug, "z value", "Pr(>|z|)")
+drug_trend_tests_ca %>%
+  knitr::kable(digits = 2)
+
 ```
 
