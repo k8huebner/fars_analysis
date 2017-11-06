@@ -7,8 +7,8 @@ summary(log_reg)$coefficients
 
 clean_fars1 <- clean_fars %>% 
   mutate(Alcohol = drug_type != "Alcohol")
-if drug == "Nonalcohol"
-else drug == c("Alcohol, Cannabinoid", "Depressant", "Narcotic", "Other", "Stimulant")
+if drug == "Nonalcohol"{test}
+else drug == c("Alcohol, Cannabinoid", "Depressant", "Narcotic", "Other", "Stimulant") {other test}
 
 
 <- function(){
@@ -35,7 +35,6 @@ else drug == c("Alcohol, Cannabinoid", "Depressant", "Narcotic", "Other", "Stimu
   }
    
 }
-
 
 test <- clean_fars %>% 
   mutate(alchyesno = drug_type != "Alcohol") %>% 

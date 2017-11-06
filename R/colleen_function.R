@@ -23,14 +23,11 @@ function(drug,df){
    }
  if(df$drug == "Nonalcohol"){
   Nonalcohol <- c("Cannabinoid", "Depressant", "Narcotic", "Other", "Stimulant") 
-  
-  
-}
+ }
 
-
-  
-
-
+ test<- if(df$drug == "Nonalcohol"){
+   Nonalcohol <- c("Cannabinoid", "Depressant", "Narcotic", "Other", "Stimulant") }
+summary(test)
 lapply 
 #to make table 
 
