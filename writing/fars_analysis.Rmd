@@ -44,11 +44,27 @@ knitr::kable(col.names = c("Drug type", "F 1999-2002", "F 2003-2006", "F 2007-20
 
 ```
 
+```{r}
+#figure 2
+```
+```{r}
+#figure 3
+```
 
 
 ```{r}
 #Generating a table with percentages and 95% CIs by drug type for the years 1999 and 2010 using the perc_cis function
 
+```
 
+```{r}
+drug_list <- c("Alcohol", "Nonalcohol", "Narcotic", "Depressant",
+               "Stimulant", "Cannabinoid", "Other")
+drug_trend_tests_log_reg <- lapply(drug_list, test_trend_log_reg)
+drug_trend_tests_log_reg <- dplyr::bind_rows(drug_trend_tests_log_reg) %>%
+  dplyr::mutate(drug = drug_list) %>%
+  dplyr::select(drug, "z value", "Pr(>|z|)")
+drug_trend_tests_log_reg %>% 
+  knitr::kable(digits = 2)
 ```
 
