@@ -41,22 +41,26 @@ test_trend_ca <- function(drug, df = clean_fars){
                 trials = sum(!is.na(positive_for_drug)))
     ca_alcohol <- prop.trend.test(x = to_test$positive,
                                   n = to_test$trials)
-    sqrt(ca_alcohol$statistic)
+    #sqrt(ca_alcohol$statistic)
+    ca_alcohol <- c(sqrt(ca_alcohol$statistic), ca_alcohol$p.value)
+    #titles <- c("Z", "p.value")
+    #final <- data.frame(titles, ca_alcohol)
   }
 }
 
 #test of second function
-test1 <- test_trend_ca(drug = "Stimulant")
+X <- test_trend_ca(drug = "Stimulant")
 
-#further test
-# drug_list <- c("Alcohol", "Nonalcohol", "Narcotic", "Depressant", 
-#                "Stimulant", "Cannabinoid", "Other")
-# drug_trend_tests_ca <- lapply(drug_list, test_trend_ca) 
-# drug_trend_tests_ca <- dplyr::bind_rows(drug_trend_tests_ca) %>%
-#   dplyr::mutate(drug = drug_list) %>%
-#   dplyr::select(drug, "z value", "Pr(>|z|)") 
-# drug_trend_tests_ca %>% 
-#   knitr::kable()
+
+##
+drug_list <- c("Alcohol", "Nonalcohol", "Narcotic", "Depressant",
+               "Stimulant", "Cannabinoid", "Other")
+drug_trend_tests_ca <- lapply(drug_list, test_trend_ca)
+drug_trend_tests_ca <- dplyr::bind_rows(drug_trend_tests_ca) %>%
+  dplyr::mutate(drug = drug_list) %>%
+  dplyr::select(drug, "X-squared", 2)
+drug_trend_tests_ca %>%
+  knitr::kable()
 
 #third function
 
