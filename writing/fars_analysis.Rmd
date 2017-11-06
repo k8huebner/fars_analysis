@@ -53,25 +53,12 @@ group_by(year, agecat, unique_id) %>%
 summarize(positive_for_drug = any(positive_for_drug)) %>% 
 ungroup() %>% 
 group_by(year, agecat) %>%
-summarize(count = mean(positive_for_drug))
+summarize(count = 100*(mean(positive_for_drug)))
+
 nonalcohol_data
 
-year_data <- clean_fars %>%
-filter(!drug_type == "Alcohol") %>%
-select(unique_id, drug_type, year, agecat, positive_for_drug) %>%
-filter(!is.na(positive_for_drug)) %>%
-filter(positive_for_drug == TRUE) %>%
-filter(!is.na(agecat)) %>%
-group_by(year) %>%
-summarize(count = n())
-
-data_comb <- nonalcohol_data %>% 
-  left_join(year_data, by = "year") %>% 
-  mutate(proportion = 100*(count.x / count.y))
-
-
-plot_1 <- data_comb %>%
-ggplot(aes(x = year, y = proportion, color = agecat)) +
+plot_1 <- nonalcohol_data %>%
+ggplot(aes(x = year, y = count, color = agecat)) +
 geom_line() +
 labs(x = "Year", y = "Positive for Nonalcohol Drugs, %)", color = "Age") +
 #scale_y_continuous(limits = c(0,40), breaks = 10, name = "") +
