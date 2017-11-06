@@ -1,47 +1,44 @@
-library(tidyverse)
-to_test <- clean_fars %>%
-  filter(drug_type == "Alcohol")
-log_reg <- glm(positive_for_drug ~ year, data = to_test,
-               family = binomial(link = "logit"))
-summary(log_reg)$coefficients
+#third function
 
-clean_fars1 <- clean_fars %>% 
-  mutate(Alcohol = drug_type != "Alcohol")
-if drug == "Nonalcohol"
-else drug == c("Alcohol, Cannabinoid", "Depressant", "Narcotic", "Other", "Stimulant")
-
-
-<- function(){
-  # Print out today's date
-  cat("Today's date is: ")
-  cat(format(Sys.time(), "%b %d, %Y."), "\n")
-  # Add something based on the weekday of today's date
-  todays_wday <- lubridate::wday(Sys.time())
-  if(todays_wday %in% c(1, 7)){ # What to do on Sat / Sun
-    cat("It's the weekend!")
-  } else if (todays_wday == c(6)) { # What to do on Friday
-    cat("It's almost the weekend!")
-  } else { # What to do other days
-    cat("It's ", 7 - todays_wday, "days until the weekend.")
-  }
-}
-
-
-<- function(drug, df){
-  if(df$drug == "Nonalcohol") {}
-  if(df$drug %in% c("Alcohol, Cannabinoid", "Depressant", 
-                 "Narcotic", "Other", "Stimulant"){
+test_trend_log_reg <- function(drug, df = clean_fars){
+  if(drug == "Nonalcohol") {
+    
+    nonalcohol <- df %>% 
+      mutate(alchyesno = drug_type != "Alcohol") %>% 
+      filter(alchyesno == "TRUE") %>% 
+      select("unique_id", "sex", "year", "agecat", "positive_for_drug") %>% 
+      mutate(drug_type = "Nonalcohol")
+    log_reg <- glm(positive_for_drug ~ year, data = to_test,
+                   family = binomial(link = "logit"))
+   x <- summary(log_reg)$coefficients
+   x = as.data.frame(x)
+   x %>% 
+     slice(2) %>% 
+     select(3:4)    
     
   }
-   
+  else {
+    to_test <- df %>%
+      filter(drug_type == drug)
+    log_reg <- glm(positive_for_drug ~ year, data = to_test,
+                   family = binomial(link = "logit"))
+    x <- summary(log_reg)$coefficients 
+    x = as.data.frame(x)
+    x %>% 
+      slice(2) %>% 
+      select(3:4)
+  }
 }
 
+#test_trend_log_reg(drug = "Stimulant")
 
-test <- clean_fars %>% 
-  mutate(alchyesno = drug_type != "Alcohol") %>% 
-  filter(alchyesno == "TRUE") %>% 
-  select("unique_id", "sex", "year", "agecat", "positive_for_drug") %>% 
-  mutate(drug_type = "Nonalcohol")
-  
+#fars analysis
+drug_list <- c("Alcohol", "Nonalcohol", "Narcotic", "Depressant",
+               "Stimulant", "Cannabinoid", "Other")
+drug_trend_tests_log_reg <- lapply(drug_list, test_trend_log_reg)
+drug_trend_tests_log_reg <- dplyr::bind_rows(drug_trend_tests_log_reg) %>%
+  dplyr::mutate(drug = drug_list) %>%
+  dplyr::select(drug, "z value", "Pr(>|z|)")
+drug_trend_tests_log_reg %>% 
+  knitr::kable(digits = 2)
 
-summary(test)
