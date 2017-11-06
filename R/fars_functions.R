@@ -22,16 +22,19 @@ test_trend_ca <- function(drug, df = clean_fars){
     
     nonalcohol <- df %>% 
       mutate(alchyesno = drug_type != "Alcohol") %>% 
-      filter(alchyesno == "TRUE") %>% 
-      select("unique_id", "sex", "year", "agecat", "positive_for_drug") %>% 
+      filter(alchyesno == "TRUE") %>%
+      group_by(unique_id, year) %>% 
+      summarize(positive_for_drug = any(positive_for_drug, na.rm = TRUE)) %>% 
+      ungroup() %>% 
       mutate(drug_type = "Nonalcohol") %>%
       group_by(year) %>%
       summarize(positive = sum(positive_for_drug, na.rm = TRUE),
                 trials = sum(!is.na(positive_for_drug)))
     ca_alcohol <- prop.trend.test(x = nonalcohol$positive,
                                   n = nonalcohol$trials)
-    sqrt(ca_alcohol$statistic)    
-    
+    ca_alcohol <- data.frame(Z = sqrt(ca_alcohol$statistic), p.value = ca_alcohol$p.value)
+    row.names(ca_alcohol) <- NULL
+    as_tibble(ca_alcohol)  
   }
   else {
     to_test <- df %>%
@@ -41,26 +44,16 @@ test_trend_ca <- function(drug, df = clean_fars){
                 trials = sum(!is.na(positive_for_drug)))
     ca_alcohol <- prop.trend.test(x = to_test$positive,
                                   n = to_test$trials)
-    #sqrt(ca_alcohol$statistic)
-    ca_alcohol <- c(sqrt(ca_alcohol$statistic), ca_alcohol$p.value)
-    #titles <- c("Z", "p.value")
-    #final <- data.frame(titles, ca_alcohol)
+  
+    ca_alcohol <- data.frame(Z = sqrt(ca_alcohol$statistic), p.value = ca_alcohol$p.value)
+    row.names(ca_alcohol) <- NULL
+    as_tibble(ca_alcohol)
   }
 }
 
 #test of second function
-X <- test_trend_ca(drug = "Stimulant")
+X <- test_trend_ca(drug = "Nonalcohol")
 
-
-##
-drug_list <- c("Alcohol", "Nonalcohol", "Narcotic", "Depressant",
-               "Stimulant", "Cannabinoid", "Other")
-drug_trend_tests_ca <- lapply(drug_list, test_trend_ca)
-drug_trend_tests_ca <- dplyr::bind_rows(drug_trend_tests_ca) %>%
-  dplyr::mutate(drug = drug_list) %>%
-  dplyr::select(drug, "X-squared", 2)
-drug_trend_tests_ca %>%
-  knitr::kable()
 
 #third function
 
@@ -69,8 +62,10 @@ test_trend_log_reg <- function(drug, df = clean_fars){
     
     nonalcohol <- df %>% 
       mutate(alchyesno = drug_type != "Alcohol") %>% 
-      filter(alchyesno == "TRUE") %>% 
-      select("unique_id", "sex", "year", "agecat", "positive_for_drug") %>% 
+      filter(alchyesno == "TRUE") %>%
+      group_by(unique_id, year) %>% 
+      summarize(positive_for_drug = any(positive_for_drug, na.rm = TRUE)) %>% 
+      ungroup() %>% 
       mutate(drug_type = "Nonalcohol")
     log_reg <- glm(positive_for_drug ~ year, data = nonalcohol,
                    family = binomial(link = "logit"))
