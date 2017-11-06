@@ -69,7 +69,27 @@ plot_1
 
 ```{r}
 #Figure 2
+#Figure 1: Prevalence of nonalcohol drugs in fatally injured drivers by year and age group
+data2 <- clean_fars %>%
+filter(!drug_type == "Alcohol") %>%
+select(unique_id, drug_type, year, agecat, positive_for_drug) %>%
+filter(!is.na(positive_for_drug)) %>%
+filter(!is.na(agecat)) %>%
+group_by(year, drug_type, unique_id) %>% 
+summarize(positive_for_drug = any(positive_for_drug)) %>% 
+ungroup() %>% 
+group_by(year, drug_type) %>%
+summarize(count = 100*(mean(positive_for_drug)))
 
+nonalcohol_data
+
+plot_3 <- data2 %>%
+ggplot(aes(x = year, y = count, color = drug_type)) +
+geom_line() +
+labs(x = "Year", y = "Positive for Nonalcohol Drugs, %)", color = "Drug type") +
+#scale_y_continuous(limits = c(0,40), breaks = 10, name = "") +
+theme_few()
+plot_3
 ```
 
 
