@@ -1,10 +1,11 @@
 ---
-title: "fars_analysis"
+title: "Reproduced analysis of FARS data"
 author: "Kate Huebner, Maggie Weinroth, Colleen Brent"
 date: "10/27/2017"
 output:
-  word_document: default
+  pdf_document: default
   html_document: default
+  word_document: default
 ---
 
 ```{r global_Options, echo=TRUE}
@@ -42,10 +43,10 @@ knitr::kable(col.names = c("Drug type", "F 1999-2002", "F 2003-2006", "F 2007-20
                              "M 2007-2010"))
 ```
 
-
+**Figure 1: Prevalence of nonalcohol drugs in fatally injured drivers by year and age group**
 
 ```{r, fig.width = 7, fig.height = 4, fig.align ='center'}
-#Figure 1: Prevalence of nonalcohol drugs in fatally injured drivers by year and age group
+
 nonalcohol_data <- clean_fars %>%
 filter(!drug_type == "Alcohol") %>%
 select(unique_id, drug_type, year, agecat, positive_for_drug) %>%
@@ -69,9 +70,9 @@ plot_1
 
 ```
 
-```{r}
-#Figure 2
-#Figure 1: Prevalence of nonalcohol drugs in fatally injured drivers by year and age group
+**Figure 2: Prevalence of nonalcohol drugs in fatally injured drivers by year and age group**
+
+```{r, fig.width = 7, fig.height = 4, fig.align ='center'}
 data2 <- clean_fars %>%
 filter(!drug_type == "Alcohol") %>%
 select(unique_id, drug_type, year, agecat, positive_for_drug) %>%
@@ -94,9 +95,10 @@ theme_few()
 plot_3
 ```
 
+**Figure 3: Prevalence of cannabinoid drugs in fatally injured drivers by year and age group **
 
-```{r}
-#Figure 3
+```{r, fig.width = 7, fig.height = 4, fig.align ='center'}
+
 pot_data <- clean_fars %>%
 filter(drug_type == "Cannabinoid") %>%
 select(unique_id, drug_type, year, agecat, positive_for_drug) %>%
@@ -119,6 +121,8 @@ theme_few()
 plot_2
 ```
 
+**Prevalence of drugs in fatally injured drivers for 1999 and 2010 by drug type** 
+
 ```{r}
 #first function table
 table1 <- clean_fars %>%
@@ -134,6 +138,7 @@ knitr::kable(col.names = c("Drug type", "1999", "2010"))
 table1
 ```
 
+**Statistics for testing for trend in prevalence of drugs over study years by drug type using Cochran-Armitage trend test** 
 
 ```{r}
 #second function table
@@ -146,6 +151,8 @@ drug_trend_tests_ca <- dplyr::bind_rows(drug_trend_tests_ca) %>%
 drug_trend_tests_ca %>%
   knitr::kable(digits = 2)
 ```
+
+**Statistics for testing for trend in prevalence of drugs over study years by drug type using Wald test of logistic regression coeffcient for “year”**
 
 ```{r}
 #Third function table
