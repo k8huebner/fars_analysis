@@ -90,3 +90,7 @@ test_trend_log_reg <- function(drug, df = clean_fars){
       select(3:4)
   }
 }
+
+#test of third function
+X <- test_trend_log_reg(drug = "Nonalcohol")
+X

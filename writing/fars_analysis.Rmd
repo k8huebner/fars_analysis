@@ -65,7 +65,6 @@ labs(x = "Year", y = "Positive for Nonalcohol Drugs, %)", color = "Age") +
 theme_few()
 plot_1
 
-
 ```
 
 
@@ -92,5 +91,30 @@ drug_trend_tests_ca <- dplyr::bind_rows(drug_trend_tests_ca) %>%
 drug_trend_tests_ca %>%
   knitr::kable(digits = 2)
 
+```
+
+#Figure 3
+```{r}
+
+pot_data <- clean_fars %>%
+filter(drug_type == "Cannabinoid") %>%
+select(unique_id, drug_type, year, agecat, positive_for_drug) %>%
+filter(!is.na(positive_for_drug)) %>%
+filter(!is.na(agecat)) %>%
+group_by(year, agecat, unique_id) %>% 
+summarize(positive_for_drug = any(positive_for_drug)) %>% 
+ungroup() %>% 
+group_by(year, agecat) %>%
+summarize(count = 100*(mean(positive_for_drug)))
+
+pot_data
+
+plot_2 <- pot_data %>%
+ggplot(aes(x = year, y = count, color = agecat)) +
+geom_line() +
+labs(x = "Year", y = "Positive for Nonalcohol Drugs, %)", color = "Age") +
+#scale_y_continuous(limits = c(0,40), breaks = 10, name = "") +
+theme_few()
+plot_2
 ```
 
