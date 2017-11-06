@@ -54,7 +54,7 @@ test_trend_ca <- function(drug, df = clean_fars){
 }
 
 #test of second function
-X <- test_trend_ca(drug = "Nonalcohol")
+#X <- test_trend_ca(drug = "Nonalcohol")
 
 
 #third function
