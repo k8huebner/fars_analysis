@@ -1,6 +1,6 @@
 ---
 title: "fars_analysis"
-author: "Kate Huebner"
+author: "Kate Huebner, Maggie Weinroth, Colleen Brent"
 date: "10/27/2017"
 output:
   word_document: default
