@@ -17,10 +17,62 @@ numbers <- perc_cis(x = 9000, n = 23000)
 numbers
 
 #second function
+test_trend_ca <- function(drug, df = clean_fars){
+  if(drug == "Nonalcohol") {
+    
+    nonalcohol <- df %>% 
+      mutate(alchyesno = drug_type != "Alcohol") %>% 
+      filter(alchyesno == "TRUE") %>% 
+      select("unique_id", "sex", "year", "agecat", "positive_for_drug") %>% 
+      mutate(drug_type = "Nonalcohol")
+    
+    nonalcohol <- clean_fars %>%
+      filter(drug_type == "Alcohol") %>%
+      group_by(year) %>%
+      summarize(positive = sum(positive_for_drug, na.rm = TRUE),
+                trials = sum(!is.na(positive_for_drug))) 
+    ca_alcohol <- prop.trend.test(x = nonalcohol$positive,
+                                  n = nonalcohol$trials)
+    sqrt(ca_alcohol$statistic)
+  
+    x <- summary(ca_alcohol)$coefficients
+    x = as.data.frame(x)
+    x %>% 
+      slice(2) %>% 
+      select(3:4)    
+    
+  }
+  else {
+    alcohol <- df %>%
+      filter(drug_type == "Alcohol") %>%
+      group_by(year) %>%
+      summarize(positive = sum(positive_for_drug, na.rm = TRUE),
+                trials = sum(!is.na(positive_for_drug))) 
+    ca_alcohol <- prop.trend.test(x = alcohol$positive,
+                                  n = alcohol$trials)
+    sqrt(ca_alcohol$statistic)
+    
+    x <- summary(ca_alcohol)$coefficients
+    x = as.data.frame(x)
+    x %>% 
+      slice(2) %>% 
+      select(3:4)  
+  }
+}
 
+#test of second function
+test1 <- test_trend_ca(drug = "Stimulant")
 
+#further test
+# drug_list <- c("Alcohol", "Nonalcohol", "Narcotic", "Depressant", 
+#                "Stimulant", "Cannabinoid", "Other")
+# drug_trend_tests_ca <- lapply(drug_list, test_trend_ca) 
+# drug_trend_tests_ca <- dplyr::bind_rows(drug_trend_tests_ca) %>%
+#   dplyr::mutate(drug = drug_list) %>%
+#   dplyr::select(drug, "z value", "Pr(>|z|)") 
+# drug_trend_tests_ca %>% 
+#   knitr::kable()
 
-#third function
 #third function
 
 test_trend_log_reg <- function(drug, df = clean_fars){

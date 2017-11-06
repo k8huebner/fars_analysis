@@ -15,6 +15,7 @@ knitr::opts_chunk$set(echo = TRUE, message = FALSE,
 library(dplyr) 
 library(tidyr) 
 library(ggplot2)
+library(ggthemes)
 ```
 
 ```{r}
@@ -40,7 +41,48 @@ knitr::kable(col.names = c("Drug type", "F 1999-2002", "F 2003-2006", "F 2007-20
                              "M 2007-2010"))
 ```
 ```{r}
-#Figure 1
+#Figure 1: Prevalence of nonalcohol drugs in fatally injured drivers by year and age group
+alcohol_data <- clean_fars %>% 
+  select(unique_id, drug_type, year, agecat, positive_for_drug) %>% 
+  filter(!is.na(positive_for_drug)) %>% 
+  filter(!is.na(agecat)) %>% 
+  group_by(agecat, year) %>% 
+  summarize(total_count = n())
+alcohol_data
+  
+
+nonalcohol_data <- clean_fars %>% 
+  filter(!drug_type == "Alcohol") %>% 
+  select(unique_id, drug_type, year, agecat, positive_for_drug) %>% 
+  filter(!is.na(positive_for_drug)) %>%
+  filter(positive_for_drug == TRUE) %>% 
+  filter(!is.na(agecat)) %>% 
+  group_by(agecat, year) %>% 
+  summarize(count = n())
+  #mutate (interest = agecat which positive_for_drug == "True") %>% 
+  #want to add new column with total number of deaths per age group (regardless of alcohol usage)
+  #summarize(number_per_age = n()) 
+
+nonalcohol_data
+
+joined <- nonalcohol_data %>% 
+  left_join(alcohol_data) %>% 
+  mutate(proportion = (count / total_count)*100)
+  
+
+joined
+
+  
+plot_1 <- joined %>% 
+  ggplot(aes(x = year, y = proportion, color = agecat)) +
+  geom_line() +
+  labs(x = "Year", y = "Positive for Nonalcohol Drugs, %)", color = "Age") +
+  scale_y_continuous(limits = c(0,30), breaks = 10, name = "") +
+  theme_few() 
+  
+  
+plot_1
+  
 
 ```
 
