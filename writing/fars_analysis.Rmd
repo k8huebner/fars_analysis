@@ -86,7 +86,7 @@ nonalcohol_data
 plot_3 <- data2 %>%
 ggplot(aes(x = year, y = count, color = drug_type)) +
 geom_line() +
-labs(x = "Year", y = "Positive for Nonalcohol Drugs, %)", color = "Drug type") +
+labs(x = "Year", y = "Positive for Drugs, %)", color = "Drug type") +
 #scale_y_continuous(limits = c(0,40), breaks = 10, name = "") +
 theme_few()
 plot_3
@@ -111,7 +111,7 @@ pot_data
 plot_2 <- pot_data %>%
 ggplot(aes(x = year, y = count, color = agecat)) +
 geom_line() +
-labs(x = "Year", y = "Positive for Nonalcohol Drugs, %)", color = "Age") +
+labs(x = "Year", y = "Positive for Cannabiniod, %)", color = "Age") +
 #scale_y_continuous(limits = c(0,40), breaks = 10, name = "") +
 theme_few()
 plot_2
