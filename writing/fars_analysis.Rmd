@@ -1,6 +1,6 @@
 ---
 title: "Reproduced analysis of FARS data"
-author: "Kate Huebner, Maggie Weinroth, Colleen Brent"
+author: "Kate Huebner, Maggie Weinroth, Colleen Brents"
 date: "10/27/2017"
 output:
   pdf_document: default
@@ -61,9 +61,11 @@ summarize(count = 100*(mean(positive_for_drug)))
 nonalcohol_data
 
 plot_1 <- nonalcohol_data %>%
-ggplot(aes(x = year, y = count, color = agecat)) +
-geom_line() +
-labs(x = "Year", y = "Positive for Nonalcohol Drugs, %)", color = "Age") +
+ggplot(aes(x = year, y = count, shape = agecat)) +
+geom_line(linetype=1) +
+geom_point(aes(shape=agecat), size=2, col="black") + 
+scale_shape(solid=TRUE) + 
+labs(x = "Year", y = "Positive for Nonalcohol Drugs, %)", shape = "Age") +
 #scale_y_continuous(limits = c(0,40), breaks = 10, name = "") +
 theme_few()
 plot_1
@@ -86,20 +88,22 @@ summarize(count = 100*(mean(positive_for_drug)))
 
 nonalcohol_data
 
-plot_3 <- data2 %>%
-ggplot(aes(x = year, y = count, color = drug_type)) +
-geom_line() +
-labs(x = "Year", y = "Positive for Drugs, %)", color = "Drug type") +
+plot_2 <- data2 %>%
+ggplot(aes(x = year, y = count, shape = drug_type)) +
+geom_line(linetype=1) +
+geom_point(aes(shape= drug_type), size=2, col="black") + 
+scale_shape(solid=TRUE) + 
+labs(x = "Year", y = "Positive for Drugs, %)", shape = "Drug type") +
 #scale_y_continuous(limits = c(0,40), breaks = 10, name = "") +
 theme_few()
-plot_3
+plot_2
 ```
 
 **Figure 3: Prevalence of cannabinoid drugs in fatally injured drivers by year and age group **
 
 ```{r, fig.width = 7, fig.height = 4, fig.align ='center'}
 
-pot_data <- clean_fars %>%
+plot_data <- clean_fars %>%
 filter(drug_type == "Cannabinoid") %>%
 select(unique_id, drug_type, year, agecat, positive_for_drug) %>%
 filter(!is.na(positive_for_drug)) %>%
@@ -110,18 +114,20 @@ ungroup() %>%
 group_by(year, agecat) %>%
 summarize(count = 100*(mean(positive_for_drug)))
 
-pot_data
+plot_data
 
-plot_2 <- pot_data %>%
-ggplot(aes(x = year, y = count, color = agecat)) +
-geom_line() +
-labs(x = "Year", y = "Positive for Cannabiniod, %)", color = "Age") +
+plot_3 <- plot_data %>%
+ggplot(aes(x = year, y = count, shape = agecat)) +
+geom_line(linetype=1) +
+geom_point(aes(shape=agecat), size=2, col="black") + 
+scale_shape(solid=TRUE) + 
+labs(x = "Year", y = "Positive for Cannabiniod, %)", shape = "Age") +
 #scale_y_continuous(limits = c(0,40), breaks = 10, name = "") +
 theme_few()
-plot_2
+plot_3
 ```
 
-**Prevalence of drugs in fatally injured drivers for 1999 and 2010 by drug type** 
+**Figure 4: Prevalence of drugs in fatally injured drivers for 1999 and 2010 by drug type** 
 
 ```{r}
 #first function table
