@@ -94,7 +94,6 @@ geom_line(linetype=1) +
 geom_point(aes(shape= drug_type), size=2, col="black") + 
 scale_shape(solid=TRUE) + 
 labs(x = "Year", y = "Positive for Drugs, %)", shape = "Drug type") +
-#scale_y_continuous(limits = c(0,40), breaks = 10, name = "") +
 theme_few()
 plot_2
 ```
@@ -122,7 +121,6 @@ geom_line(linetype=1) +
 geom_point(aes(shape=agecat), size=2, col="black") + 
 scale_shape(solid=TRUE) + 
 labs(x = "Year", y = "Positive for Cannabiniod, %)", shape = "Age") +
-#scale_y_continuous(limits = c(0,40), breaks = 10, name = "") +
 theme_few()
 plot_3
 ```
@@ -172,5 +170,3 @@ drug_trend_tests_ca %>%
   knitr::kable(digits = 2)
 
 ```
-
-
